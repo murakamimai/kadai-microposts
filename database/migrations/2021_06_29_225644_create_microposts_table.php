@@ -15,7 +15,12 @@ class CreateMicropostsTable extends Migration
     {
         Schema::create('microposts', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->unsignedBigInteger('user_id');
+            $table->string('content');
             $table->timestamps();
+
+            // 外部キー制約
+            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 
@@ -29,3 +34,4 @@ class CreateMicropostsTable extends Migration
         Schema::dropIfExists('microposts');
     }
 }
+
