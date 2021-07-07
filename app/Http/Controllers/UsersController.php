@@ -35,6 +35,11 @@ class UsersController extends Controller
             'microposts' => $microposts,
         ]);
     }
+    /**
+     * ユーザのフォロー一覧ページを表示するアクション。
+     * @param $id ユーザのid
+     * @return \Illuminate\Http\Response
+     */
     public function followings($id)
     {
         // idの値でユーザを検索して取得

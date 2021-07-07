@@ -134,4 +134,80 @@ class User extends Authenticatable
         // それらのユーザが所有する投稿に絞り込む
         return Micropost::whereIn('user_id', $userIds);
     }
+    
+    /**
+     * このユーザがお気に入りしてる1以上のmicropost。
+     */
+    public function favoritesMicroposts()
+    {
+        return $this->belongsToMany(User::class, 'favorites', 'user_id', 'micropost_id')->withTimestamps();
+    }
+ 
+    /**
+     * micropostをお気に入りにしてる1以上のユーザ。
+     */
+    public function favoritesUser()
+    {
+        return $this->belongsToMany(User::class, 'favorites', 'micropost_id', 'user_id')->withTimestamps();
+    }
+ 
+    /**
+     * $micropost_idで指定されたmicropostをお気に入り登録する。
+     *
+     * @param int $userId
+     * @return bool
+     */
+    public function favorite($userId)
+    {
+        // すでにお気に入りしているかの確認
+        $exist = $this->is_favorite($micropostId);
+　　    // 相手が自分自身かどうかの確認
+        $its_me = $this->id == $micropostId;
+ 
+        if ($exist || $its_me) {
+            // すでにお気に入り登録していればお気に入り登録を外す
+ 
+        return false;
+        } else {
+            // お気に入り登録していなければお気に入り登録をする
+            $this->favorite()->attach($userId);
+            return true;
+            }
+ 
+    }   
+ 
+    /**
+     * $micropost_idで指定されたmicropostをお気に入り登録を外す。
+     *
+     * @param int $userId
+     * @return bool
+     */
+    public function unfavorite($userId)
+    {
+        // すでにフォローしているかの確認
+        $exist = $this->is_favorite($userId);
+        // 相手が自分自身かどうかの確認
+        $its_me = $this->id == $userId;
+ 
+        if ($exist && !$its_me) {
+            // すでにフォローしていればフォローを外す
+            $this->favorite()->detach($micropostId);
+            return true;
+            } else {
+                    // 未フォローであれば何もしない
+                return false;
+                }
+    }
+ 
+    /**
+     * 指定された $userIdのユーザをこのユーザがフォロー中であるか調べる。フォロー中ならtrueを返す。
+     *
+     * @param int $userId
+     * @return bool
+     */
+    public function is_favorite($userId)
+    {
+        // フォロー中ユーザの中に $userIdのものが存在するか
+        return $this->favorite()->where('ｍicrosoft_id', $userId)->exists();
+    }
 }
